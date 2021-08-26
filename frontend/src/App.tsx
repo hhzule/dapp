@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
+import ETHContract from "web3-eth-contract"
 import Navbar from "./Navbar";
 import Marketplace from "./abi/Marketplace.json";
 import {Marketplace as MPType, ProductCreated, ProductPurchased} from "../types/web3-v1-contracts/Marketplace"
@@ -13,8 +14,8 @@ const App : React.FC<{}> = ({}) => {
   const [error, setError] = useState<string | boolean>(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>();
-  const [marketplace, setMarketplace] = useState<MPType>();
-
+  // const [marketplace, setMarketplace] = useState<MPType>();
+  const [marketplace, setMarketplace] = useState<ETHContract.Contract>();
   const loadWeb3 = async () => {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -83,10 +84,11 @@ const App : React.FC<{}> = ({}) => {
        const networkData = Marketplace.networks[netId];
   
       if (networkData) {
-        const marketContract  = await new web3.eth.Contract(
+        // const marketContract : MPType = await new web3.eth.Contract(
+        const marketContract : ETHContract.Contract = await new web3.eth.Contract(
           Marketplace.abi as AbiItem[],
           networkData.address
-        ) as unknown as  MPType
+        ) 
         setMarketplace(marketContract);
 
     const productCount = await marketContract.methods.productCount().call() as unknown as number
