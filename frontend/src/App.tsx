@@ -91,7 +91,6 @@ const App = () => {
     }
     setProducts(productarray);
     setLoading(false);
-    console.log(marketplaces, "89th line hello")
     
     } else {
       window.alert("Marketplace contract not deployed to detected network.");
