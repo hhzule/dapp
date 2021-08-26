@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
+import EthContract from 'web3-eth-contract'
+import Network from "web3-net"
 import Navbar from "./Navbar";
 import Marketplace from "./abis/Marketplace.json";
 import Main from "./Main";
 import loader from "./assets/loading.gif";
 import {Product, NetworId } from "./types"
 
+
+ type dd = {
+  "5777": { 
+    events: {}; 
+    links: {}; 
+    address: string; 
+    transactionHash: string; };
+ }
 const App = () => {
   const [account, setAccount] = useState<string>();
   const [error, setError] = useState<string | boolean>(false);
-  const [products, setProducts] = useState<Product[] | []>();
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>();
   const [marketplace, setMarketplace] = useState<any>();
 
@@ -68,27 +78,36 @@ const App = () => {
     const web3: Web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
     setAccount(accounts[0]);
-    const networkId: number = await web3.eth.net.getId();
-    // const net: string = networkId as unknown as string
-    const networkData = Marketplace.networks["5777"];
-    if (networkData) {
-      const marketplaces: any = await new web3.eth.Contract(
-        Marketplace.abi as any,
-        networkData.address
-      );
-      setMarketplace(marketplaces);
-      const productCount = await marketplaces.methods.productCount().call();
-      // Load products
-      let productarray: Product[] = [];
-      for (var i = 1; i <= productCount; i++) {
-        const product: Product = await marketplaces.methods.products(i).call();
-        productarray.push(product);
-      }
-      setProducts(productarray);
-      setLoading(false);
+    try {
+      const networkId:number= await web3.eth.net.getId();
+      const networkData = Marketplace.networks["5777"];
+      console.log("nnet data", networkData)
+      if (networkData) {
+        const marketplaces: EthContract.Contract= await new web3.eth.Contract(
+          Marketplace.abi as any,
+          networkData.address
+        );
+        setMarketplace(marketplaces);
+
+    const productCount = await marketplaces.methods.productCount().call();
+    // Load products
+    let productarray: Product[] = [];
+    for (var i = 1; i <= productCount; i++) {
+      const product: Product = await marketplaces.methods.products(i).call();
+      productarray.push(product);
+    }
+    setProducts(productarray);
+    setLoading(false);
+    console.log(marketplaces, "89th line hello")
+    
     } else {
       window.alert("Marketplace contract not deployed to detected network.");
+    }}
+    catch (error) {
+      window.alert("network not detected.");
     }
+
+  
   };
 
   useEffect(() => {
@@ -157,3 +176,25 @@ const App = () => {
 };
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

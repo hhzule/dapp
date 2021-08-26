@@ -1,14 +1,63 @@
-npx create-react-app my-app --template typescript -frontend
+We will create a folder with *backend* and *frontend*
+create a react typescript app
+- npx create-react-app my-app --template typescript -frontend
+this will create a react project with following files and folder -img
 
-truffle init -backend
-touch backend/contracts/Marketplace.sol- add code
-change truffle config
+#lets begin with backend:
+-truffle init
+this will create a truffle project with following files and folder -img
+- create a file in contracts folder *Marketplace.sol* to write our smart contract
+- add code - explaination
+change truffle config, uncomment the following
+  ```json
+  networks: {
+    development: {
+     host: "127.0.0.1",     // Localhost (default: none)
+     port: 8545,            // Standard Ethereum port (default: none)
+     network_id: "*",       // Any network (default: none)
+    },
+  ```
+
+ update solidity compiler version 
+   ```json
+  compilers: {
+    solc: {
+      version: "0.8.6",    // Fetch exact version from solc-bin (default: truffle's version)
+      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+      // settings: {          // See the solidity docs for advice about optimization and evmVersion
+       optimizer: {
+         enabled: false,
+         runs: 200
+       },
+      //  evmVersion: "byzantium"
+      // }
+    }
+  }, 
+
+  ```
+ add the following to mention the build directory storing contracts ABI in frontend/src/abis
+   ```json
+
   contracts_directory: './contracts/',
   contracts_build_directory: '../frontend/src/abis/',
-truffle compile
- deploy the mart contract to our Ganache 
- touch migrations/2_deploy_contracts.js
- This file tells Truffle to to deploy our smart contract to the blockchain. It's kind of like a migration file for a traditional database if you're familiar with that. Also, note that the migration files are numbered so that Truffle knows which order to run them in.
+
+  ```
+
+now lets complile the code
+-truffle compile
+
+Now we need to deploy this smart contract to Ganache
+
+-touch migrations/2_deploy_contracts.js
+
+ This file tells Truffle to to deploy our smart contract to the blockchain. 
+ Also, note that the migration files are numbered so that Truffle knows which order to run them in.
+
+ add the following const Marketplace = artifacts.require("Marketplace");
+
+<!-- module.exports = function(deployer) {
+  deployer.deploy(Marketplace);
+}; -->
  truffle migrate --reset
  smart contract tests 
  $ mkdir test
