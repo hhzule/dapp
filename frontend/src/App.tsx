@@ -3,19 +3,12 @@ import Web3 from "web3";
 import EthContract from 'web3-eth-contract'
 import Network from "web3-net"
 import Navbar from "./Navbar";
-import Marketplace from "./abis/Marketplace.json";
+import Marketplace from "./abi/Marketplace.json";
+import {Marketplace as MPType} from "../types/web3-v1-contracts/Marketplace"
 import Main from "./Main";
 import loader from "./assets/loading.gif";
 import {Product, NetworId } from "./types"
 
-
- type dd = {
-  "5777": { 
-    events: {}; 
-    links: {}; 
-    address: string; 
-    transactionHash: string; };
- }
 const App = () => {
   const [account, setAccount] = useState<string>();
   const [error, setError] = useState<string | boolean>(false);

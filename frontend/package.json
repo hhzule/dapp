@@ -20,7 +20,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate-types": "typechain --target=web3-v1 './src/abi/*.json'",
+    "postinstall": "yarn generate-types"
   },
   "eslintConfig": {
     "extends": [
@@ -41,7 +43,10 @@
     ]
   },
   "devDependencies": {
+    "@typechain/web3-v1": "^3.0.0",
+    "@types/bn.js": "^5.1.0",
     "@types/react": "^17.0.19",
-    "@types/react-dom": "^17.0.9"
+    "@types/react-dom": "^17.0.9",
+    "typechain": "^5.1.2"
   }
 }
