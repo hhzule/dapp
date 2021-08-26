@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Product } from "./types";
+
 type MainProps = {
   createProduct: (name: string, price: number) => void;
   products: Product[] | undefined;
@@ -7,7 +8,7 @@ type MainProps = {
   account: string | undefined
 };
 
-const Main = ({ createProduct, products, purchaseProduct, account }: MainProps) => {
+const Main : React.FC < MainProps >= ({ createProduct, products, purchaseProduct, account }) => {
   const [productname, setProductname] = useState<string>("");
   const [productprice, setProductprice] = useState<number>(0);
   return (

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
-import EthContract from 'web3-eth-contract'
 import Navbar from "./Navbar";
 import Marketplace from "./abi/Marketplace.json";
-import {Marketplace as MPType, ProductCreated} from "../types/web3-v1-contracts/Marketplace"
+import {Marketplace as MPType, ProductCreated, ProductPurchased} from "../types/web3-v1-contracts/Marketplace"
 import Main from "./Main";
 import loader from "./assets/loading.gif";
 import {Product } from "./types"
@@ -14,7 +13,7 @@ const App : React.FC<{}> = ({}) => {
   const [error, setError] = useState<string | boolean>(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>();
-  const [marketplace, setMarketplace] = useState<any>();
+  const [marketplace, setMarketplace] = useState<MPType>();
 
   const loadWeb3 = async () => {
     if (window.ethereum) {
@@ -31,11 +30,15 @@ const App : React.FC<{}> = ({}) => {
   //////////////////////////
   const createProduct = async(name: string, price: number) => {
     setLoading(true);
+    if(!marketplace){
+      return
+    }
     try {
+     
      await marketplace.methods
         .createProduct(name, price)
         .send({ from: account })
-        .on("error", function (error: any) {
+        .on("error", function (error: Error) {
           window.alert(error.message);
         });
         await loadBlockchainData()
@@ -51,11 +54,14 @@ const App : React.FC<{}> = ({}) => {
   const purchaseProduct = async(id: string, price: number) => {
     setLoading(true);
     let idn = Number(id);
+    if(!marketplace){
+      return
+    }
     try {
       marketplace.methods
         .purchaseProduct(idn)
         .send({ from: account, value: price })
-        .on("error", function (error: any) {
+        .on("error", function (error: Error) {
           window.alert(error.message);
         });
         await loadBlockchainData()
@@ -77,17 +83,17 @@ const App : React.FC<{}> = ({}) => {
        const networkData = Marketplace.networks[netId];
   
       if (networkData) {
-        const marketplaces: EthContract.Contract= await new web3.eth.Contract(
+        const marketContract  = await new web3.eth.Contract(
           Marketplace.abi as AbiItem[],
           networkData.address
-        );
-        setMarketplace(marketplaces);
+        ) as unknown as  MPType
+        setMarketplace(marketContract);
 
-    const productCount = await marketplaces.methods.productCount().call();
+    const productCount = await marketContract.methods.productCount().call() as unknown as number
     // Load products
     let productarray: Product[] = [];
     for (var i = 1; i <= productCount; i++) {
-      const product: Product = await marketplaces.methods.products(i).call();
+      const product : Product = await marketContract.methods.products(i).call();
       productarray.push(product);
     }
     setProducts(productarray);
@@ -110,7 +116,7 @@ const App : React.FC<{}> = ({}) => {
     })();
   }, [account]);
 
-  window.ethereum.on("accountsChanged", function (accounts: any) {
+  window.ethereum.on("accountsChanged", function (accounts: string) {
     setAccount(accounts);
     loadBlockchainData();
   });
