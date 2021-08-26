@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import EthContract from 'web3-eth-contract'
-import Network from "web3-net"
 import Navbar from "./Navbar";
 import Marketplace from "./abi/Marketplace.json";
-import {Marketplace as MPType} from "../types/web3-v1-contracts/Marketplace"
+import {Marketplace as MPType, ProductCreated} from "../types/web3-v1-contracts/Marketplace"
 import Main from "./Main";
 import loader from "./assets/loading.gif";
-import {Product, NetworId } from "./types"
+import {Product } from "./types"
+import {AbiItem} from 'web3-utils';
 
-const App = () => {
+const App : React.FC<{}> = ({}) => {
   const [account, setAccount] = useState<string>();
   const [error, setError] = useState<string | boolean>(false);
   const [products, setProducts] = useState<Product[]>([]);
@@ -32,7 +32,7 @@ const App = () => {
   const createProduct = async(name: string, price: number) => {
     setLoading(true);
     try {
-      await marketplace.methods
+     await marketplace.methods
         .createProduct(name, price)
         .send({ from: account })
         .on("error", function (error: any) {
@@ -72,12 +72,13 @@ const App = () => {
     const accounts = await web3.eth.getAccounts();
     setAccount(accounts[0]);
     try {
-      const networkId:number= await web3.eth.net.getId();
-      const networkData = Marketplace.networks["5777"];
-      console.log("nnet data", networkData)
+      const networkId : number= await web3.eth.net.getId();
+      const netId = networkId as unknown as keyof typeof Marketplace.networks 
+       const networkData = Marketplace.networks[netId];
+  
       if (networkData) {
         const marketplaces: EthContract.Contract= await new web3.eth.Contract(
-          Marketplace.abi as any,
+          Marketplace.abi as AbiItem[],
           networkData.address
         );
         setMarketplace(marketplaces);
@@ -107,9 +108,6 @@ const App = () => {
       await loadWeb3();
       await loadBlockchainData();
     })();
-    // return () => {
-    //   cleanup
-    // };
   }, [account]);
 
   window.ethereum.on("accountsChanged", function (accounts: any) {
