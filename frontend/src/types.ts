@@ -10,10 +10,3 @@ export type Product = {
   3: string;
   4: boolean;
   };
-  
-  export type NetworId = {
-    events: {};
-    links: {};
-    address: string;
-    transactionHash: string;
-  };

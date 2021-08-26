@@ -15,7 +15,7 @@ const App : React.FC<{}> = ({}) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>();
   // const [marketplace, setMarketplace] = useState<MPType>();
-  const [marketplace, setMarketplace] = useState<ETHContract.Contract>();
+  const [marketplace, setMarketplace] = useState<MPType>();
   const loadWeb3 = async () => {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -85,10 +85,11 @@ const App : React.FC<{}> = ({}) => {
   
       if (networkData) {
         // const marketContract : MPType = await new web3.eth.Contract(
-        const marketContract : ETHContract.Contract = await new web3.eth.Contract(
+        const marketContract  = await new web3.eth.Contract(
           Marketplace.abi as AbiItem[],
           networkData.address
-        ) 
+        ) as unknown as MPType
+        
         setMarketplace(marketContract);
 
     const productCount = await marketContract.methods.productCount().call() as unknown as number
